@@ -1,0 +1,15 @@
+Devendra baing
+dbaing
+dbaing123
+
+mamtapatwardhan
+mamtap
+anjali123
+
+
+{ "name":"Anjali Kumthekar",
+  "username": "anjalik",
+  "email": "anjalik@gmail.com",
+  "password": "anjalik123",
+  "role": "user"
+}
