@@ -3,8 +3,10 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const bcrypt = require('bcrypt');
 
+const validRoles = ['user', 'admin' , 'client'];
+
 const userSchema = new Schema({
-  name:{
+  name: {
     type: String,
   },
   username: {
@@ -17,7 +19,7 @@ const userSchema = new Schema({
     required: true,
     unique: true,
     validate: {
-      validator: function(value) {
+      validator: function (value) {
         // Basic email validation
         return /\S+@\S+\.\S+/.test(value);
       },
@@ -30,9 +32,31 @@ const userSchema = new Schema({
   },
   role: {
     type: String,
-    default: 'user',
+    enum: validRoles,
+    // default: 'user',
     required: true,
-  }
+  },
+  paths: {
+    type: Object,
+    default:""
+  },
+  // bucket: [
+  //   {
+  //     date: {
+  //       type: Date,
+  //       required: true,
+  //       default: Date.now,
+  //     },
+  //     tasks: [
+  //       {
+  //         type: Schema.Types.ObjectId, // Reference to Task model
+  //         ref: 'Task', // The name of the Task model
+  //         required: true,
+  //       }
+  //     ],
+
+  //   }
+  // ]
 });
 
 

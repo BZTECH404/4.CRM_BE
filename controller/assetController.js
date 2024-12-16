@@ -8,7 +8,7 @@ exports.getAllAssets = async (req, res) => {
     const assets = await Asset.find({ user_id });
     res.json(assets);
   } catch (error) {
-    //console.error(error);
+    //////console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
@@ -20,7 +20,7 @@ exports.addAsset = async (req, res) => {
     const newAsset = await Asset.create({ user_id, type, name, amount });
     res.json(newAsset);
   } catch (error) {
-    //console.error(error);
+    //////console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
@@ -32,7 +32,7 @@ exports.updateAsset = async (req, res) => {
     const updatedAsset = await Asset.findByIdAndUpdate(assetId, req.body, { new: true });
     res.json(updatedAsset);
   } catch (error) {
-    //console.error(error);
+    //////console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
@@ -44,7 +44,7 @@ exports.deleteAsset = async (req, res) => {
     await Asset.findByIdAndDelete(assetId);
     res.json({ message: 'Asset deleted successfully' });
   } catch (error) {
-    //console.error(error);
+    //////console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };

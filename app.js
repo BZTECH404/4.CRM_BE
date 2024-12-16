@@ -14,6 +14,9 @@ const consolidatedRoutes = require('./routes/consolidatedbillRoutes');
 const questionRoutes=require('./routes/questionRoutes')
 const setRoutes=require('./routes/setRoutes')
 const corRoutes=require('./routes/cor')
+const bucketRoutes = require('./routes/bucketRoute');
+const templateRoutes= require('./routes/templateRoutes')
+const filetemplateRoutes=require('./routes/filetemplateroutes')
 
 const passport = require('passport');
 const app = express();
@@ -86,10 +89,13 @@ app.use('/income',incomeRoutes)
 app.use('/consolidated', consolidatedRoutes);
 app.use('/question',questionRoutes)
 app.use('./set',setRoutes)
+app.use('/bucket', bucketRoutes);
+app.use('/template',templateRoutes)
+app.use('/filetemplate',filetemplateRoutes)
 // Start server
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-  //////////////console.log(`Server is running on port ${PORT}`);
+  ////console.log(`Server is running on port ${PORT}`);
 });
 
 const awsServerlessExpress = require('aws-serverless-express');

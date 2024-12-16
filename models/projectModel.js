@@ -1,4 +1,3 @@
-// models/projectModel.js
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
@@ -7,12 +6,12 @@ const projectSchema = new Schema({
     type: String,
     // required: true,
   },
-  status:{
+  status: {
     type: String,
   },
-  stage:{
-    type:String,
-    default:""
+  stage: {
+    type: String,
+    default: ""
   },
   type: {
     type: String,
@@ -23,7 +22,7 @@ const projectSchema = new Schema({
     type: String,
     default: null,
   },
-  company:{
+  company: {
     type: String,
     default: null,
   },
@@ -41,56 +40,89 @@ const projectSchema = new Schema({
   },
   questions: [{
     question: {
-        type: Schema.Types.ObjectId,
-        ref:'question'
+      type: Schema.Types.ObjectId,
+      ref: 'question'
     },
     answer: {
-        type: String
+      type: String
     },
     prevanswer: [{
       type: String
+    }],
+    isDisabled:{
+      type:Boolean
+    }
   }],
-}],
-  // New field to reference an array of user IDs
   users: [{
     type: Schema.Types.ObjectId,
     ref: 'User',
   }],
-  isDisabled:{
-    type:Boolean,
-    default:false
-},
-ward:{
-  type:String,
-  default:""
-},
-cts:{
-  type:String,
-  default:""
-},
-files: [{
-  order:{
-    type:Number,
-    default:0
+  isDisabled: {
+    type: Boolean,
+    default: false
   },
-  date:{
-    type:Date,
-    default:Date.now()
+  ward: {
+    type: String,
+    default: ""
   },
-  filename:{
-    type:String
+  cts: {
+    type: String,
+    default: ""
   },
-  current: {
-    type: String
+  agent : {
+    type: String,
+    default: ""
   },
-  prevlinks: [{
-    type: String
-}],
-  isDisabled:{
-    type:Boolean,
-    default:false
-  }
-}],
+  files: [{
+    order: {
+      type: Number,
+      default: 0
+    },
+    date: {
+      type: Date,
+      default: Date.now()
+    },
+    filename: {
+      type: String
+    },
+    current: {
+      type: String
+    },
+    prevlinks: [{
+      type: String
+    }],
+    isDisabled: {
+      type: Boolean,
+      default: false
+    }
+  }],
+  // New fields
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  stories: [{
+    storyText: {
+      type: String,
+      required: true
+    },
+    date: {
+      type: Date,
+      default: Date.now
+    },
+    order: {
+      type: Number,
+      default: 0
+    },
+    isDisabled: {
+      type: Boolean,
+      default: false
+    },
+    type:{
+      type:String,
+      default:""
+    }
+  }]
 });
 
 const Project = mongoose.model('Project', projectSchema);

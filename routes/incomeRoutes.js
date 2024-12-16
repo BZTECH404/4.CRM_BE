@@ -10,7 +10,7 @@ router.post('/create', incomeController.createIncome);
 router.put('/', incomeController.getAllIncome);
 
 // Get a single income record by ID
-router.get('/:id', incomeController.getIncomeById);
+router.get('/:projectId', incomeController.getIncomeById);
 
 // Update an income record by ID
 router.put('/:id', incomeController.updateIncomeById);

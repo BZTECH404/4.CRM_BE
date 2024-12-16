@@ -5,7 +5,7 @@ const TaskHistory = require('../models/taskHistory');
 // Controller for creating a new task
 const createTask = async (req, res) => {
   try {
-    ////////////////console.log(req.body)
+    //////////////////////console.log(req.body)
     const newTask = await Task.create(req.body);
     res.status(201).json(newTask);
   } catch (error) {
@@ -26,20 +26,37 @@ const getAllTasks = async (req, res) => {
 // Controller for fetching a single task by ID
 const getTaskById = async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id);
-    if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
+    // Ensure the variable is correctly extracted from request parameters
+    const ProjectId = req.params.projectid;
+    //////console.log(ProjectId); // Debug: Check if projectId is defined
+
+    // If projectId is undefined, log an error message
+    if (!ProjectId) {
+      // ////console.error('Project ID is undefined'); // Additional debugging
+      return res.status(400).json({ success: false, error: 'Project ID is required' });
     }
-    res.status(200).json(task);
+
+    // Finding all task records associated with the projectId
+    const task = await Task.find({ projectid: ProjectId });
+    //////console.log(task); // Debug: Check the result of the query
+
+    // If no task is found, return a 404 status with an error message
+    if (task.length === 0) {
+      return res.status(404).json({ success: false, error: 'No task found for this project' });
+    }
+
+    // Returning the found task records with a 200 status
+    res.status(200).json({ success: true, data: task });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // Handling errors and returning a 500 status with the error message
+    res.status(500).json({ success: false, error: error.message });
   }
-};
+}
 
 // Controller for updating a task
 const updateTask = async (req, res) => {
   try {
-    ////////////////console.log(req.body)
+    //////////////////////console.log(req.body)
     const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedTask) {
       return res.status(404).json({ message: 'Task not found' });
@@ -71,14 +88,14 @@ const getAllTasksForUser = async (req, res) => {
     const userId = req.params.id// Assuming userId is available in the request parameters
 
     const allTasks = await Task.find();
-    ////////////////console.log(userId)
-    const tasksForUser=[]
-    for(let i=0;i<allTasks.length;i++){
-      if(((allTasks[i].assignTaskTo[0]).toString())?.includes(userId)){
+    //////////////////////console.log(userId)
+    const tasksForUser = []
+    for (let i = 0; i < allTasks.length; i++) {
+      if (((allTasks[i].assignTaskTo[0]).toString())?.includes(userId)) {
         tasksForUser.push(allTasks[i])
       }
     }
-    ////////////////console.log(tasksForUser)    
+    //////////////////////console.log(tasksForUser)    
     res.status(200).json(tasksForUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -96,12 +113,12 @@ const markTaskAsComplete = async (req, res) => {
     }
 
     // Update the taskCompleted field to true
-    if(task.taskCompleted == true){
-    task.taskCompleted = false;
-    task.CompletedAt=null
-    }else{
-    task.taskCompleted = true;
-    task.CompletedAt=Date.now()
+    if (task.taskCompleted == true) {
+      task.taskCompleted = false;
+      task.CompletedAt = null
+    } else {
+      task.taskCompleted = true;
+      task.CompletedAt = Date.now()
 
     }
     // Save the updated task
@@ -109,36 +126,37 @@ const markTaskAsComplete = async (req, res) => {
 
     res.status(200).json({ message: 'Task marked as complete', task: task });
   } catch (error) {
+    //console.log(error)
     res.status(500).json({ error: error.message });
   }
 }
 
 const getAllIncompleteTasks = async (req, res) => {
   try {
-    
+
     // Find all tasks where taskCompleted is false
     const userId = req.params.id
     const allTasks = await Task.find({ taskCompleted: false });
-    const tasksForUser=[]
-  //   for(let i=0;i<allTasks.length;i++){
-  //     if((allTasks[i].assignTaskTo[0])){
-  //     if(((allTasks[i].assignTaskTo[0]).toString())?.includes(userId)){
-  //       tasksForUser.push(allTasks[i])
-  //     }
-  //   }
-  // }
-  for(let i=0;i<allTasks.length;i++){
-    let temp=allTasks[i].assignTaskTo
-    for(let j=0;j<temp.length;j++){
-    if((temp[j]).toString()==userId){
-      tasksForUser.push(allTasks[i])
+    const tasksForUser = []
+    //   for(let i=0;i<allTasks.length;i++){
+    //     if((allTasks[i].assignTaskTo[0])){
+    //     if(((allTasks[i].assignTaskTo[0]).toString())?.includes(userId)){
+    //       tasksForUser.push(allTasks[i])
+    //     }
+    //   }
+    // }
+    for (let i = 0; i < allTasks.length; i++) {
+      let temp = allTasks[i].assignTaskTo
+      for (let j = 0; j < temp.length; j++) {
+        if ((temp[j]).toString() == userId) {
+          tasksForUser.push(allTasks[i])
+        }
+      }
     }
-  }
-}
-    ////////////////console.log(tasksForUser)    
+    //////////////////////console.log(tasksForUser)    
     res.status(200).json(tasksForUser);
   } catch (error) {
-    //////////////console.log(error)
+    ////////////////////console.log(error)
     res.status(500).json({ error: error.message });
   }
 };
@@ -148,8 +166,8 @@ const getAllCompletedTasks = async (req, res) => {
     // Find all tasks where taskCompleted is true
     const userId = req.params.id
     const allTasks = await Task.find({ taskCompleted: true });
-    const tasksForUser=[]
-    //////////////console.log(userId,allTasks)
+    const tasksForUser = []
+    ////////////////////console.log(userId,allTasks)
     // for(let i=0;i<allTasks.length;i++){
     //   if((allTasks[i].assignTaskTo[0])){
     //   if(((allTasks[i].assignTaskTo[0]).toString())?.includes(userId)){
@@ -157,15 +175,15 @@ const getAllCompletedTasks = async (req, res) => {
     //   }
     // }
     // }
-    for(let i=0;i<allTasks.length;i++){
-      let temp=allTasks[i].assignTaskTo
-      for(let j=0;j<temp.length;j++){
-      if((temp[j]).toString()==userId){
-        tasksForUser.push(allTasks[i])
+    for (let i = 0; i < allTasks.length; i++) {
+      let temp = allTasks[i].assignTaskTo
+      for (let j = 0; j < temp.length; j++) {
+        if ((temp[j]).toString() == userId) {
+          tasksForUser.push(allTasks[i])
+        }
       }
     }
-  }
-    ////////////////console.log(tasksForUser)    
+    //////////////////////console.log(tasksForUser)    
     res.status(200).json(tasksForUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -174,43 +192,43 @@ const getAllCompletedTasks = async (req, res) => {
 
 const findTasksByFilter = async (req, res) => {
   try {
-    
-    const {projectid,taskCompleted,assignTaskTo}=req.body
-    // //////////////console.log(assignTaskTo)
-    //////////////console.log(req.body)
+
+    const { projectid, taskCompleted, assignTaskTo } = req.body
+    // ////////////////////console.log(assignTaskTo)
+    ////////////////////console.log(req.body)
     const tasksFilter = {};
-    if(projectid){
+    if (projectid) {
       tasksFilter.projectid = projectid;
     }
-    if(taskCompleted){
+    if (taskCompleted) {
       tasksFilter.taskCompleted = taskCompleted;
     }
     const tasks = await Task.find(tasksFilter);
-  //  //////////////console.log(tasks)
-  let temp=tasks
-  if(assignTaskTo){
-  temp=[]
-    for(let i=0;i<tasks.length;i++){
-      for(let j=0;j<tasks[i].assignTaskTo.length;j++){
-      if(((tasks[i].assignTaskTo[j]).toString())?.includes(assignTaskTo[0])){
-        temp.push(tasks[i])
+    //  ////////////////////console.log(tasks)
+    let temp = tasks
+    if (assignTaskTo) {
+      temp = []
+      for (let i = 0; i < tasks.length; i++) {
+        for (let j = 0; j < tasks[i].assignTaskTo.length; j++) {
+          if (((tasks[i].assignTaskTo[j]).toString())?.includes(assignTaskTo[0])) {
+            temp.push(tasks[i])
+          }
+        }
       }
     }
-    }
-  }
-    // //////////////console.log(tasks)
+    // ////////////////////console.log(tasks)
     // Assuming filterKey and filterValue are available in the request body
     // if (!filterKey || !filterValue) {
     //   return res.status(400).json({ message: 'Filter key and value are required' });
     // }
 
     // Find tasks based on the provided filter key and value
-    
-    ////////////////console.log(tasks)
+
+    //////////////////////console.log(tasks)
 
     res.status(200).json(temp);
   } catch (error) {
-    //////////////console.log(error)
+    ////////////////////console.log(error)
     res.status(500).json({ error: error.message });
   }
 };
@@ -231,40 +249,40 @@ const deleteTaskById = async (req, res) => {
   }
 };
 
-const numberoftask=async(req,res)=>{
-try{
-  //////console.log("hi")
-  obj={}
-  const taskHistory = await TaskHistory.find()
-  for(let i=0;i<taskHistory.length;i++){
-    if((taskHistory[i].taskId)){
-    if(obj[(taskHistory[i].taskId)?.toString()]==undefined){
-      obj[(taskHistory[i].taskId)?.toString()]=1
-    }else{
-      obj[(taskHistory[i].taskId)?.toString()]++
+const numberoftask = async (req, res) => {
+  try {
+    ////////////console.log("hi")
+    obj = {}
+    const taskHistory = await TaskHistory.find()
+    for (let i = 0; i < taskHistory.length; i++) {
+      if ((taskHistory[i].taskId)) {
+        if (obj[(taskHistory[i].taskId)?.toString()] == undefined) {
+          obj[(taskHistory[i].taskId)?.toString()] = 1
+        } else {
+          obj[(taskHistory[i].taskId)?.toString()]++
+        }
+
+      }
     }
-
+    const allTasks = await Task.find();
+    // ////////////console.log(allTasks[0])
+    // ////////////console.log(allTasks)
+    for (let i = 0; i < allTasks.length; i++) {
+      // ////////////console.log(obj[allTasks[i]._id])
+      if (obj[(allTasks[i]._id).toString()]) {
+        await Task.findByIdAndUpdate((allTasks[i]._id).toString(), { nooftask: obj[(allTasks[i]._id).toString()] })
+        // ////////////console.log(res)
+      }
+    }
+    res.status(200).json(obj)
+  } catch (error) {
+    ////////////console.log(error)
   }
-}
-  const allTasks = await Task.find();
-  // //////console.log(allTasks[0])
-  // //////console.log(allTasks)
-  for(let i=0;i<allTasks.length;i++){
-    // //////console.log(obj[allTasks[i]._id])
-    if(obj[(allTasks[i]._id).toString()]){
-      await Task.findByIdAndUpdate((allTasks[i]._id).toString(),{nooftask:obj[(allTasks[i]._id).toString()]})
-      // //////console.log(res)
-    } 
-  }
-  res.status(200).json(obj)
-}catch(error){
-  //////console.log(error)
-}
- 
-// for(let i=0;i<task.length;i++){
 
-// }
+  // for(let i=0;i<task.length;i++){
+
+  // }
 
 }
 
-module.exports = { createTask, getAllTasks, getTaskById, updateTask, deleteTask, getAllTasksForUser,markTaskAsComplete,getAllIncompleteTasks,getAllCompletedTasks,findTasksByFilter,numberoftask};
+module.exports = { createTask, getAllTasks, getTaskById, updateTask, deleteTask, getAllTasksForUser, markTaskAsComplete, getAllIncompleteTasks, getAllCompletedTasks, findTasksByFilter, numberoftask };

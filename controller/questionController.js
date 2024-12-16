@@ -6,7 +6,7 @@ const createQuestion = async (req, res) => {
         const newQuestion = await Question.create(req.body);
         res.status(201).json(newQuestion);
     } catch (error) {
-        //console.log(error)
+        ////////console.log(error)
         res.status(500).json({ message: error.message });
     }
 };
@@ -24,7 +24,7 @@ const getAllQuestions = async (req, res) => {
 // 
 const getQuestions = async (req, res) => {
     try {
-        //console.log(req.body)
+        ////////console.log(req.body)
         if(req.body.isDisabled==undefined){
             req.body.isDisabled=false
         }
@@ -51,8 +51,8 @@ const getQuestionById = async (req, res) => {
 // Controller function to update an existing question
 const updateQuestion = async (req, res) => {
     try {
-        // //console.log(req.params.id)
-        console.log(req.body)
+        // ////////console.log(req.params.id)
+        //////console.log(req.body)
         const updatedQuestion = await Question.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedQuestion) {
             return res.status(404).json({ message: 'Question not found' });

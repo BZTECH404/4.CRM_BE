@@ -71,7 +71,10 @@ const IncomeSchema = new Schema({
     isDisabled: {
         type: Boolean,
         default: false
-    }
+    },
+    deletedtimes:[{
+        type:Date
+    }]
 });
 
 const Income = mongoose.model('Income', IncomeSchema);

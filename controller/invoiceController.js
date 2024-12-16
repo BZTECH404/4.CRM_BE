@@ -2,7 +2,7 @@ const Invoice = require('../models/invoice');
 const Income = require('../models/income');
 // Controller function to create a new invoice
 const createInvoice = async (req, res) => {
-    ////////console.log(req.body)
+    //////////////console.log(req.body)
     try {
         const savedInvoice = await Invoice.create(req.body);
         res.status(201).json(savedInvoice);
@@ -15,7 +15,7 @@ const createInvoice = async (req, res) => {
 // Controller function to get all invoices
 const getAllInvoices = async (req, res) => {
     try {
-        const invoices = await Invoice.find({isDisabled:false});
+        const invoices = await Invoice.find();
         res.status(200).json(invoices);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -38,6 +38,7 @@ const getInvoiceById = async (req, res) => {
 // Controller function to update an existing invoice
 const updateInvoice = async (req, res) => {
     try {
+        //console.log(req.body)
         const updatedInvoice = await Invoice.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedInvoice) {
             return res.status(404).json({ message: 'Invoice not found' });
@@ -51,8 +52,16 @@ const updateInvoice = async (req, res) => {
 // Controller function to delete an invoice
 const deleteInvoice = async (req, res) => {
     try {
-        const invoice1=await Invoice.findById(req.params.id)
-        const deletedInvoice = await Invoice.findByIdAndUpdate(req.params.id,{isDisabled:!invoice1.isDisabled})
+        let invoice1=await Invoice.findById(req.params.id)
+        let deletetimesarr=invoice1.deletedtimes
+        //console.log(deletetimesarr)
+
+        deletetimesarr.push(Date.now())
+        //console.log(deletetimesarr)
+
+        const deletedInvoice = await Invoice.findByIdAndUpdate(req.params.id,{isDisabled:!invoice1.isDisabled,
+            deletedtimes:deletetimesarr
+        })
         if (!deletedInvoice) {
             return res.status(404).json({ message: 'Invoice not found' });
         }
@@ -69,7 +78,7 @@ const updateInvoicebyBills =async(req,res)=>{
         obj={}
         // Calculating Amount Paid by Iterating thorugh Bills
         for(let i=0;i<allbills.length;i++){
-            // ////////console.log(allbills[i])
+            // //////////////console.log(allbills[i])
             if(allbills[i].invoice){
             if(obj[allbills[i].invoice]==undefined){
                 obj[allbills[i].invoice]=allbills[i].amount
@@ -79,11 +88,11 @@ const updateInvoicebyBills =async(req,res)=>{
             }
         }
     }
-    ////////console.log(obj)
+    //////////////console.log(obj)
         res.status(200).json({message:"hello"})
         const allinvoices=await Invoice.find()
         for(let i=0;i<allinvoices.length;i++){
-            // ////////console.log(allbills[i])
+            // //////////////console.log(allbills[i])
             await Invoice.findByIdAndUpdate(allinvoices[i]._id,{amount_paid:obj[(allinvoices[i]._id).toString()]})
         }
 

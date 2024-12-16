@@ -10,6 +10,10 @@ const contactSchema = new Schema({
     type: String,
     // required: true,
   },
+  isDisabled:{
+    type:Boolean,
+    default:false
+  },
   email: {
     type: String,
     // required: true,
@@ -25,6 +29,19 @@ const contactSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Project',
   }],
+  files: {
+    date: {
+      type: Date,
+      default: Date.now()
+    },
+    current: {
+      type: String
+    },
+    prevlinks: [{
+      type: String
+    }],
+  }
+
 });
 
 const Contact = mongoose.model('Contact', contactSchema);

@@ -46,7 +46,10 @@ const InvoiceSchema = new Schema({
     isDisabled:{
         type:Boolean,
         default:false
-    }
+    },
+    deletedtimes:[{
+        type:Date
+    }] 
 });
 
 const Invoice = mongoose.model('Invoice', InvoiceSchema);

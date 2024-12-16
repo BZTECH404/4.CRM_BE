@@ -1,11 +1,14 @@
 const bcrypt = require('bcrypt');
 // const Date = require('date');
 
-(async () => {password="password123"
+(async () => {password="sanketg123"
 const hashedPassword = await bcrypt.hash(password, 10);
-//////////////console.log(hashedPassword);
+//console.log(hashedPassword);
 })()
 // const date=new Date()
 const date=Date.now()
-// //////////////console.log(hashedPassword)
-////////////console.log(date)
+// ////////////////////console.log(hashedPassword)
+//console.log(date)
+
+
+// zeeshan -s007

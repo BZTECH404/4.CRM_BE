@@ -10,8 +10,13 @@ const QuestionSchema = new Schema({
     question:{
         type:String,
     },
+    type:{
+        type:String,
+        default:"Text"
+    },
     order:{
-        type:String
+        type:String,
+        default:"9999"
     },
     isDisabled: {
         type: Boolean,

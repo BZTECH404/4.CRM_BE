@@ -11,6 +11,9 @@ router.post('/create', correspondenceController.createCorrespondence);
 // Create a node in correspondence
 router.post('/node/:id', correspondenceController.createcorrhistory);
 
+// Update the Correspondence
+router.put('/updatecorr/:id', correspondenceController.updateCorrespondence);
+
 // Get a single correspondence by ID
 router.get('/correspondences/:id', correspondenceController.getCorrespondenceById);
 
@@ -18,7 +21,10 @@ router.get('/correspondences/:id', correspondenceController.getCorrespondenceByI
 router.put('/updateref/:id',correspondenceController.AddReference)
 
 //Update the References of a Correspondence
-router.put('/updateenclosure/:id',correspondenceController.AddReference)
+router.put('/updateenclosure/:id',correspondenceController.AddEnclosures)
+
+//Update the References of a Correspondence
+router.put('/updatereply/:id',correspondenceController.AddReply)
 
 //Update the References/Enclosures from a Correspondence
 router.put('/updatefrom/:id',correspondenceController.AddReffrom)
@@ -31,6 +37,11 @@ router.put('/update/:id',correspondenceController.updatecorrorder)
 router.put('/correspondences/:id', correspondenceController.updateCorrespondence);
 
 // Delete a correspondence by ID
-router.delete('/correspondences/:id', correspondenceController.deleteCorrespondence);
+router.delete('/correspondences/delete/:id', correspondenceController.deleteCorrespondence);
+
+
+// temp
+router.put('/hey',correspondenceController.AddReffromin)
+
 
 module.exports = router;

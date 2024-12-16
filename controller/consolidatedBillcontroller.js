@@ -18,7 +18,7 @@ exports.createConsolidated = async (req, res) => {
         const consolidated = await Consolidated.create(req.body);
         res.status(201).json(consolidated);
     } catch (err) {
-        ////console.log(err)
+        //////////console.log(err)
         res.status(400).json({ message: err.message });
     }
 };
@@ -27,7 +27,7 @@ exports.createConsolidated = async (req, res) => {
 exports.getAllConsolidated = async (req, res) => {
     try {
         const consolidated = await Consolidated.find({isDisabled:false})
-        // ////console.log(consolidated)
+        // //////////console.log(consolidated)
         res.status(200).json(consolidated);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -52,7 +52,7 @@ exports.updateConsolidated = async (req, res) => {
     try {
         
         const conso1=await Consolidated.findById(req.params.id)
-        ////console.log(req.body,conso1)
+        //////////console.log(req.body,conso1)
         if((req.body.urls).length!=0 && (conso1.urls).length!=0){
         if(req.body.urls[(req.body.urls).length-1].file!=conso1.urls[conso1.urls.length-1].file){
             let temp=[]
@@ -71,18 +71,18 @@ exports.updateConsolidated = async (req, res) => {
         }
         res.status(200).json(consolidated);
     } catch (err) {
-        ////console.log(err)
+        //////////console.log(err)
         res.status(400).json({ message: err.message });
     }
 };
 exports.disabledConsolidated = async (req, res) => {
         try{
-            ////console.log("here")
+            //////////console.log("here")
             const consolidated = await Consolidated.findById(req.params.id);
             await consolidated.updateOne({isDisabled:true})
             await consolidated.save()
         }catch(err){
-            ////console.log(err)
+            //////////console.log(err)
         }
 }
 // Delete a consolidated entry
