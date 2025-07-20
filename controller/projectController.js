@@ -211,38 +211,60 @@ async function importQuestions(req, res) {
   }
 }
 
+// async function addfiles(req, res) {
+//   const { id, filename, date, url } = req.body
+//   try {
+//     let proj1 = await Project.findById(id)
+//     let last = proj1.files.length
+//     let files = proj1.files
+//     //////console.log(last, "last")
+//     //////console.log(id, filename, date, url)
+//     //////console.log(files)
+  
+//     files.push({
+//       order: last,
+//       filename: filename,
+//       current: url
+//     })
+//     // proj1.files=files
+//     // //console.log(files)
+//     await Project.findByIdAndUpdate(id, proj1, { new: true })
+//     res.status(200).json({ message: "succesful" })
+//   } catch (error) {
+//     // //console.log(error)
+//     res.status(500).json({ error: error.message });
+//   }
+// }
+
 async function addfiles(req, res) {
-  const { id, filename, date, url } = req.body
+  const { id, filesfrom,date } = req.body
   try {
     let proj1 = await Project.findById(id)
     let last = proj1.files.length
     let files = proj1.files
-    //////console.log(last, "last")
-    //////console.log(id, filename, date, url)
-    //////console.log(files)
-  
-    files.push({
-      order: last,
-      filename: filename,
-      current: url
-    })
-    // proj1.files=files
-    // //console.log(files)
+    console.log(filesfrom)
+    for(let i=0;i<filesfrom.length;i++){
+      files.push({
+        order: last,
+        date: date,
+        filename: filesfrom[i][1],
+        current: filesfrom[i][0]
+      })
+      last++
+    }
     await Project.findByIdAndUpdate(id, proj1, { new: true })
     res.status(200).json({ message: "succesful" })
   } catch (error) {
-    // //console.log(error)
     res.status(500).json({ error: error.message });
   }
 }
-
 
 
 async function updateProjectfiles(req, res) {
   // const { id, filename, date, url } = req.body
   let pid = req.params.pid
   let fid = req.params.fid
-  //////console.log(pid, fid, req.body)
+  // console.log(pid, fid, req.body)
 
   try {
     let proj1 = await Project.findById(pid)
@@ -251,6 +273,7 @@ async function updateProjectfiles(req, res) {
     for (let i = 0; i < files.length; i++) {
       if ((files[i]._id).toString() == fid) {
         files[i].filename = req.body.filename
+        files[i].date = req.body.date
         if (req.body.current != null) {
           (files[i].prevlinks).push(files[i].current)
           files[i].current = req.body.current

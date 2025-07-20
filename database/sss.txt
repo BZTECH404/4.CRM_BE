@@ -1,0 +1,36 @@
+ const handleSubmitStory = async (e, typeofstory) => {
+        e.preventDefault();
+    
+        const storyData = {
+          storyText: formData.description,
+          date: createsdate,
+          order: parseInt(formData.orderNumber, 10),
+          type: typeofstory
+        };
+    
+        try {
+          // Use the id from useParams directly for creating a story
+          await dispatch(createStory(id, storyData));
+          setFormData({
+            date: '',
+            orderNumber: '',
+            description: '',
+          });
+          handleCloseModalStory()
+          dispatch(fetchProjects({
+            company: companyname ? companyname : null,
+            status: feactive ? feactive : null,
+            isDisabled: isDisabled == 'true' ? true : false,
+            type: regu ? regu : null,
+            id: id
+          })).then((resp) => {
+            // //////console.log(resp[0].stories)
+            setStories(resp[0].stories)
+            //////console.log(resp)
+          }).catch(error => {
+    
+          })
+        } catch (error) {
+          console.error('Error creating story:', error);
+        }
+      };

@@ -5,7 +5,11 @@ const TaskHistory = require('../models/taskHistory');
 // Controller for creating a new task
 const createTask = async (req, res) => {
   try {
-    //////////////////////console.log(req.body)
+    console.log(req.body)
+    const taskExists = await Task.findOne({ projectid: req.body.projectid, taskSubject: req.body.taskSubject, taskDescription: req.body.taskDescription });
+    if (taskExists) {
+      return res.status(400).json({ error: 'Task with same subject, project, assign to, and description already exists' });
+    }
     const newTask = await Task.create(req.body);
     res.status(201).json(newTask);
   } catch (error) {
@@ -70,11 +74,13 @@ const updateTask = async (req, res) => {
 // Controller for deleting a task
 const deleteTask = async (req, res) => {
   try {
-    const deletedTask = await Task.findByIdAndDelete(req.params.id);
-    if (!deletedTask) {
+    const task = await Task.findById(req.params.id);
+    if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
-    res.status(200).json({ message: 'Task deleted successfully' });
+    task.isDisabled = !task.isDisabled;
+    await task.save();
+    res.status(200).json({ message: 'Task status updated successfully', task });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -126,7 +132,7 @@ const markTaskAsComplete = async (req, res) => {
 
     res.status(200).json({ message: 'Task marked as complete', task: task });
   } catch (error) {
-    //console.log(error)
+    console.log(error)
     res.status(500).json({ error: error.message });
   }
 }

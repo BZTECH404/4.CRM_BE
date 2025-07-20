@@ -2,7 +2,7 @@ const Invoice = require('../models/invoice');
 const Income = require('../models/income');
 // Controller function to create a new invoice
 const createInvoice = async (req, res) => {
-    //////////////console.log(req.body)
+    console.log(req.body)
     try {
         const savedInvoice = await Invoice.create(req.body);
         res.status(201).json(savedInvoice);

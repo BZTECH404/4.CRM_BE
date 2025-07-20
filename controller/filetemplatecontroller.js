@@ -2,14 +2,14 @@ const FileTemplate = require('../models/filetemplatemodel'); // Adjust path as n
 
 const createFileTemplate = async (req, res) => {
   try {
-    //console.log(req.body)
+    console.log(req.body)
     const fileTemplatecheck = await FileTemplate.find({name:req.body.name,type:req.body.type});
     if(fileTemplatecheck.length!=0){
         //console.log(fileTemplatecheck)
         res.status(400).json({ message: 'File template already exists' });
         return
     }
-    const fileTemplate = await FileTemplate.create(req.body);
+    const fileTemplate = await FileTemplate.create({name:req.body.name,type:req.body.type,html:req.body.rawHtml,inputValues:req.body.inputValues});
     res.status(201).json({ fileTemplate });
   } catch (err) {
     //console.log(err)
@@ -43,10 +43,14 @@ const getFileTemplateById = async (req, res) => {
 
 const updateFileTemplate = async (req, res) => {
   try {
+    console.log(req.body)
     const { id } = req.params;
     const updatedFileTemplate = await FileTemplate.findByIdAndUpdate(
-      id,
-      req.body,
+      id,{
+      name:req.body.name,
+      type:req.body.type,
+      html:req.body.rawHtml,
+      inputValues:req.body.inputValues},
       { new: true } // Return the updated document
     );
 

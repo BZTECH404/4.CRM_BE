@@ -20,7 +20,7 @@ exports.isAuthenticated = async (req, res, next) => {
         
         // //////////////////console.log(verfiyUser,"hi")
         const data=jwt.verify(token, 'your_secret_key', (err, user) => {
-            // ////////////////console.log(token,user)
+            console.log(token,user)
             if (err) {
                 //////////////////console.log(err)
               return res.status(403).json({ error: 'Forbidden - Invalid Token' });

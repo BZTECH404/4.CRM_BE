@@ -6,6 +6,10 @@ const bcrypt = require('bcrypt');
 const validRoles = ['user', 'admin' , 'client'];
 
 const userSchema = new Schema({
+  actualCreatedAt: {
+    type: Date,
+    default: Date.now
+  },
   name: {
     type: String,
   },
@@ -40,6 +44,10 @@ const userSchema = new Schema({
     type: Object,
     default:""
   },
+  status:{
+    type: String,
+    default: "active"
+  },
   // bucket: [
   //   {
   //     date: {
@@ -57,6 +65,10 @@ const userSchema = new Schema({
 
   //   }
   // ]
+  isDisabled: {
+    type: Boolean,
+    default: false
+  }
 });
 
 

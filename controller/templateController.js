@@ -3,14 +3,18 @@ const Template = require('../models/templatemodel');
 
 exports.createTemplate = async (req, res) => {
   try {
-    //console.log('hi')
-    //console.log(req.body)
-    let {elements}=req.body
-    // //console.log(elements)
+    console.log('hi')
+   const {name,scheme,rulebook}=req.body
+    const tempcheck=await Template.find({name,scheme,rulebook});
+    if(tempcheck.length>0){
+        res.status(400).json({ message: 'Template already exists' });
+        return
+    }
     const template = await Template.create(req.body)   // await template.save();
-    //console.log(template)
+    console.log(template)
     res.status(201).json({ template });
   } catch (error) {
+    console.log(error)
     res.status(400).json({ message: 'Error creating template', error });
   }
 };
@@ -18,22 +22,24 @@ exports.createTemplate = async (req, res) => {
 
 exports.getAllTemplates = async (req, res) => {
   try {
-    //console.log(req.body)
-    const templates = await Template.find({_id:req.body._id});
-    //console.log(templates)
+    console.log(req.body)
+    const templates = await Template.find();
+    console.log(templates,"here")
     res.status(200).json({ templates });
   } catch (error) {
-    // //console.log(error)
+    console.log(error)
     res.status(500).json({ message: 'Error getting templates', error });
   }
 };
 
 exports.getTemplateById = async (req, res) => {
   try {
+    console.log(req.params.id)
     const template = await Template.findById(req.params.id);
     if (!template) {
       return res.status(404).json({ message: 'Template not found' });
     }
+    console.log(template)
     res.status(200).json({ template });
   } catch (error) {
     res.status(500).json({ message: 'Error getting template', error });
@@ -41,6 +47,7 @@ exports.getTemplateById = async (req, res) => {
 };
 
 exports.updateTemplate = async (req, res) => {
+  console.log(req.body)
   try {
     const template = await Template.findByIdAndUpdate(
       req.params.id,

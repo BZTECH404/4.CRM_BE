@@ -11,6 +11,9 @@ const filetemplateSchema = new Schema({
     html:{
         type:String
     },
+    inputValues:{
+        type:Object
+    },
     date:{
         type:Date,
         default:Date.now()}

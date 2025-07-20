@@ -3,7 +3,14 @@ const router = express.Router();
 const correspondenceController = require('../controller/correspondenceController');
 
 // Get all correspondences
-router.get('/', correspondenceController.getAllCorrespondences);
+// router.get('/', correspondenceController.getAllCorrespondences);
+// GEt Pagination
+router.get('/get', correspondenceController.getAllCorrespondences);
+
+// get linked correspondences
+router.get("/linked/:id", correspondenceController.getLinkedCorrespondences);
+
+
 // View files in Correspondence 
 router.get('/file/:id',correspondenceController.viewcorrhistory)
 // Create a new correspondence

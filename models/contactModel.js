@@ -40,7 +40,14 @@ const contactSchema = new Schema({
     prevlinks: [{
       type: String
     }],
+  },
+  gst:{
+    type: String
+  },
+  pan:{
+    type: String
   }
+  
 
 });
 

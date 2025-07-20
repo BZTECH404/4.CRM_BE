@@ -3,6 +3,14 @@ const { Schema } = mongoose;
 
 // Define the schema for the task model
 const taskHistorySchema = new mongoose.Schema({
+  ActualCreatedAt:{
+    type:Date,
+    default:Date.now()
+  },
+  CreatedAt:{
+    type:Date,
+    default:Date.now()
+  },
   taskDescription: {
     type: String,
   },
@@ -14,10 +22,13 @@ const taskHistorySchema = new mongoose.Schema({
     type: String,
     
   },
-  CreatedAt:{
-    type:Date,
-    default:Date.now()
+  user:{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   },
+  files: [{
+    type: String,
+  }],
 });
 
 // // Create the Task model using the task schema

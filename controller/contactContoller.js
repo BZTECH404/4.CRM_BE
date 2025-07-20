@@ -14,7 +14,7 @@ const getAllContacts = async (req, res) => {
     if(isDisabled==true){
       projectfilter.isDisabled=true
     }
-    //console.log(projectfilter)
+    // console.log(projectfilter)
     // deletecontacts()
     const contacts = await Contact.find(projectfilter);
     // //console.log(contacts)

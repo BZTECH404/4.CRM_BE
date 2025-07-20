@@ -4,7 +4,10 @@ const { Schema } = mongoose;
 const correspondence = new Schema({
   project: {
     type: Schema.Types.ObjectId,
-    ref: 'project'
+    ref: 'Project'
+  },
+  recoveredDate:{
+    type:Date
   },
   subject: {
     type: String,
@@ -25,6 +28,9 @@ const correspondence = new Schema({
   forwarded: {
     type: String,
   },
+  cstatus:{
+    type: String,
+    default:""},
   description: {
     type: String,
   },
@@ -123,6 +129,10 @@ const correspondence = new Schema({
       default: false
     }
   }],
+  isDisabled: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const Contact = mongoose.model('Correspondence', correspondence);

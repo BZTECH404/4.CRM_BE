@@ -6,6 +6,7 @@ const taskhistoryController = require('../controller/taskhistoryController');
 router.put('/:id', taskhistoryController.updateTaskHistory);
 router.delete('/:id',taskhistoryController.deleteTaskHistory)
 router.post('/create/:id', taskhistoryController.addTaskHistory); // Create a new task
+router.get('/', taskhistoryController.getAllTaskHistory); // Get a task by ID
 router.get('/:id', taskhistoryController.getAllTaskHistories); // Get a task by ID
 router.get('/single/:id', taskhistoryController.getTaskHistoryById);
 module.exports = router;

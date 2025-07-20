@@ -22,7 +22,8 @@ const taskSchema = new mongoose.Schema({
   },
   taskSubject: {
     type: String,
-    required:true
+    // required:true,
+    default:"No Subject"
   },
   taskDescription: {
     type: String,
@@ -44,6 +45,10 @@ const taskSchema = new mongoose.Schema({
     type:Date,
     default:Date.now()
   },
+  ActualCreatedAt:{
+    type:Date,
+    default:Date.now()
+  },
   CompletedAt:{
     type:Date,
     default:null
@@ -51,6 +56,14 @@ const taskSchema = new mongoose.Schema({
   nooftask:{
     type:Number,
     default:0
+  },
+  isDisabled: {
+    type: Boolean,
+    default: false
+  },
+  deadline:{
+    type:Date,
+    default:Date.now()
   }
 
 });

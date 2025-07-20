@@ -7,12 +7,14 @@ const addTaskHistory = async (req, res) => {
     try {
       //////////////////////console.log(req.body);
       const taskId = req.params.id; // Assuming taskId is passed in the URL params
-      const { taskDescription } = req.body;
+      const { taskDescription,user,files } = req.body;
   
       // Create a new task history entry
       const newTaskHistory = new TaskHistory({
         taskDescription,
-        taskId
+        taskId,
+        user:user,
+        files:files
       });
      
       // Save the new task history entry
@@ -78,6 +80,24 @@ const addTaskHistory = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
       }
     };
+    const getAllTaskHistory = async (req, res) => {
+      try {
+        ////////////////////console.log(req.body);
+        //////////////////////console.log(taskId);
+        // Find the task by its ID and populate its taskHistory field to get all associated task histories
+        const task = await TaskHistory.find()
+        // const task = await Task.findById(taskId).populate('taskHistory');
+        ////////////////////console.log(task);
+        ////////////////////console.log("----------")
+       
+    
+        res.status(200).json(task);
+      } catch (error) {
+        //////console.error("Error fetching task histories:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    };
+  
   
 
   const getTaskHistoryById = async (req, res) => {
@@ -127,8 +147,8 @@ const addTaskHistory = async (req, res) => {
     try {
       ////////////////////console.log(req.body);
       const taskHistoryId = req.params.id; // Assuming taskHistoryId is passed in the URL params
-      const { taskDescription } = req.body;
-  
+      const { taskDescription,files } = req.body;
+      console.log(files)
       // Find the task history by its ID
       let taskHistory = await TaskHistory.findById(taskHistoryId);
   
@@ -138,7 +158,7 @@ const addTaskHistory = async (req, res) => {
   
       // Update task history fields
       taskHistory.taskDescription = taskDescription;
-  
+      taskHistory.files=files
       // Save the updated task history
       taskHistory = await taskHistory.save();
   
@@ -149,4 +169,4 @@ const addTaskHistory = async (req, res) => {
     }
   };
   
-  module.exports = { addTaskHistory,updateTaskHistory,getAllTaskHistories,getTaskHistoryById,deleteTaskHistory };
+  module.exports = { addTaskHistory,updateTaskHistory,getAllTaskHistories,getAllTaskHistory,getTaskHistoryById,deleteTaskHistory };

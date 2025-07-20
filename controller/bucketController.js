@@ -13,7 +13,7 @@ exports.createOrUpdateBucket = async (req, res) => {
     if (!date || !userId) {
         return res.status(400).json({ error: 'Date and userId are required.' });
     }
-
+    console.log(userId)
     try {
         // Find the user by ID
         const user = await User.findById(userId);
@@ -25,14 +25,21 @@ exports.createOrUpdateBucket = async (req, res) => {
         const bucketDate = new Date(date).setHours(0, 0, 0, 0);
 
         // Check if the bucket for the given date already exists for this user
+        
+
         let existingBucket = await Bucket.findOne({
             user: userId,
             date: { $eq: new Date(bucketDate) }
         }).populate('tasks');
 
         if (existingBucket) {
-            // If the bucket exists, add tasks to it if provided
+            // If the bucket exists, check if tasks already exist in the bucket
             if (tasks && Array.isArray(tasks)) {
+                for (let taskId of tasks) {
+                    if (existingBucket.tasks.some(task => task._id.toString() === taskId)) {
+                        return res.status(400).json({ error: `Task ${taskId} already exists in the bucket.` });
+                    }
+                }
                 existingBucket.tasks.push(...tasks);
             }
             await existingBucket.save();
@@ -48,7 +55,7 @@ exports.createOrUpdateBucket = async (req, res) => {
             return res.json({ message: 'New bucket created and tasks added', bucket: newBucket });
         }
     } catch (error) {
-        ////console.log('Error adding/updating bucket:', error);
+        console.log('Error adding/updating bucket:', error);
         res.status(500).json({ error: 'An error occurred while adding/updating the bucket.' });
     }
 };
@@ -146,7 +153,6 @@ exports.updateBucket = async (req, res) => {
 
 exports.deleteTaskFromBucket = async (req, res) => {
     const { userId, bucketId, taskId } = req.params;
-
     try {
         // Find the user by ID
         const user = await User.findById(userId);
@@ -176,7 +182,7 @@ exports.deleteTaskFromBucket = async (req, res) => {
 
         return res.json({ message: 'Task deleted from bucket successfully', bucket: existingBucket });
     } catch (error) {
-        ////console.error('Error deleting task from bucket:', error);
+        console.error('Error deleting task from bucket:', error);
         res.status(500).json({ error: 'An error occurred while deleting the task from the bucket.' });
     }
 };

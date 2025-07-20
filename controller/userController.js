@@ -37,6 +37,7 @@ async function createUser(req, res) {
 
     res.json({ message: 'User created successfully', user: createdUser, token });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: error.message });
   }
 }
@@ -73,7 +74,10 @@ async function login(req, res) {
 
 async function getAllUsers(req, res) {
   try {
-    const users = await User.find();
+    const users = await User.find().sort({ username: 1 });
+    // for(let i=0;i<users.length;i++){
+    //   console.log(users[i].username)
+    // }
     res.json(users);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -97,6 +101,10 @@ async function getUserById(req, res) {
 async function updateUser(req, res) {
   const id = req.params.id;
   const newData = req.body;
+  console.log(newData)
+  if(newData.password){
+    newData.password = await bcrypt.hash(newData.password, 10);
+  }
   try {
     const updatedUser = await User.findByIdAndUpdate(id, newData, { new: true });
     if (updatedUser) {
@@ -112,13 +120,20 @@ async function updateUser(req, res) {
 async function deleteUser(req, res) {
   const id = req.params.id;
   try {
-    const deletedUser = await User.findByIdAndDelete(id);
-    if (deletedUser) {
-      res.json({ message: 'User deleted successfully' });
+    console.log(id)
+    const user = await User.findById(id);
+    if (user) {
+      // console.log(user)
+
+      user.isDisabled = !user.isDisabled;
+      // console.log(user)
+      await user.save();
+      res.json({ message: 'User status updated successfully', user });
     } else {
       res.status(404).json({ error: 'User not found' });
     }
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: error.message });
   }
 }
@@ -133,6 +148,11 @@ async function checkloginvalidity(req, res) {
 
   }
 
+}
+async function changepassword(userid){
+     
+const hashedPassword = await bcrypt.hash(password, 10);
+   
 }
 
 module.exports = {

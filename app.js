@@ -17,19 +17,24 @@ const corRoutes=require('./routes/cor')
 const bucketRoutes = require('./routes/bucketRoute');
 const templateRoutes= require('./routes/templateRoutes')
 const filetemplateRoutes=require('./routes/filetemplateroutes')
+const expensesinvoiceRoutes=require('./routes/expensesinvoiceRoutes')
+const expenseRoutes=require('./routes/expenseRoutes')
+const RecurringRoutes=require('./routes/RecurringRoutes')
 
 const passport = require('passport');
 const app = express();
 const port = 3000;
 const cors = require('cors')
 require('./database/db')
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 app.use(cors())
+app.use(express.json({ limit: '10mb' })); // Increase JSON body size limit
+app.use(express.urlencoded({ limit: '10mb', extended: true })); // Increase URL-encoded body size limit
 
 require('./auth')
 
 // Middleware for Express
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.urlencoded({ extended: false }));
 
 
 // Serve HTML file
@@ -92,6 +97,9 @@ app.use('./set',setRoutes)
 app.use('/bucket', bucketRoutes);
 app.use('/template',templateRoutes)
 app.use('/filetemplate',filetemplateRoutes)
+app.use('/expenseinvoice',expensesinvoiceRoutes)
+app.use('/expense',expenseRoutes)
+app.use('/recurring',RecurringRoutes)
 // Start server
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

@@ -6,7 +6,7 @@ const fileTemplateController = require('../controller/filetemplatecontroller'); 
 router.post('/', fileTemplateController.createFileTemplate);
 
 // Route for getting all file templates
-router.get('/', fileTemplateController.getAllFileTemplates);
+router.put('/', fileTemplateController.getAllFileTemplates);
 
 // Route for getting a single file template by ID
 router.get('/:id', fileTemplateController.getFileTemplateById);

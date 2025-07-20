@@ -16,13 +16,116 @@ const createCorrespondence = async (req, res) => {
   }
 };
 
-// Get all correspondences
 const getAllCorrespondences = async (req, res) => {
   try {
-    // //////console.log("hi")
-    const correspondences = await Correspondence.find();
-    res.json(correspondences);
+    const {
+      page = 1,
+      limit = 20,
+      search = "",
+      type,
+      cstatus,
+      from,
+      date="",
+      to,
+      projectId,
+      forwarded,
+      acknowledgement,
+      isDisabled
+    } = req.query;
+    // consol
+    const filter = { isDisabled: isDisabled?isDisabled=='true'?true:false:false };
+    // console.log(req.query)
+    // Full-text search on key fields
+    if (search) {
+      filter.$or = [
+        { subject: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { letterno: { $regex: search, $options: "i" } },
+        // { from: { $regex: search, $options: "i" } },
+        // { to: { $regex: search, $options: "i" } },
+
+      ];
+    }
+// Strict match on 'date' (string match, as your schema has date as string)
+  if (date) {
+      filter.date = { $regex: `^${date}`, $options: "i" };
+    }
+    if (type) filter.type = type;
+    if (projectId) filter.project = projectId;
+    if (forwarded) filter.forwarded=forwarded;
+    if (acknowledgement) filter.acknowledgement = acknowledgement;
+    if (from) filter.from = from;
+    if (to) filter.to = to;
+    
+
+    const total = await Correspondence.countDocuments(filter);
+
+    const correspondences = await Correspondence.find(filter)
+      // .populate("project", "name") // adjust if you want more fields from project
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
+      .sort({ creationdate: -1 }); // latest first
+
+    res.json({
+      data: correspondences,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(total / limit),
+      totalItems: total,
+    });
+    // console.log(correspondences)
   } catch (err) {
+    console.error("Error in getAllCorrespondences:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+// // Get all correspondences
+// const getAllCorrespondences = async (req, res) => {
+//   try {
+//     const correspondences = await Correspondence.find();
+//     console.log()
+//     res.json(correspondences);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+
+
+const getLinkedCorrespondences = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // 1. Get the main correspondence
+    const main = await Correspondence.findById(id);
+    if (!main) return res.status(404).json({ message: "Correspondence not found" });
+
+    // 2. Build a filter from its reference arrays
+    const refValues = [
+      ...(main.reffrom || []),
+      ...(main.refto || []),
+      ...(main.enclosedfrom || []),
+      ...(main.enclosedto || []),
+      ...(main.replyto || []),
+      ...(main.replyfrom || [])
+    ].filter(Boolean); // remove any undefined/null/empty
+
+    if (refValues.length === 0) {
+      return res.json([]); // no links
+    }
+    // console.log(refValues)
+
+    // 3. Query for all other correspondences that match any of those values in the same fields
+    let linkedCorrespondences=[]
+    for(let i=0;i<refValues.length;i++){
+      let temp=await Correspondence.find({_id:refValues[i]})
+        linkedCorrespondences.push(temp[0])
+    }
+
+    // console.log(linkedCorrespondences)
+
+    res.json(linkedCorrespondences);
+  } catch (err) {
+    console.error("Error in getLinkedCorrespondences:", err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -39,14 +142,45 @@ const getCorrespondenceById = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+// 
+// const ifAcknowledgementexists=async()=>{
+//   const correspondence = await Correspondence.find();
+//   for(let i=0;i<correspondence.length;i++){
+//     for(let j=0;j<correspondence[i].files1.length;j++){
+//       if(correspondence[i].files1[j]==undefined){
+//       // console.log("here")
+//       await Correspondence.findByIdAndUpdate(correspondence[i]._id,{acknowledgement:"Not Recieved"},{new:true})
+
+//     }
+//     else{
+
+//       await Correspondence.findByIdAndUpdate(correspondence[i]._id,{acknowledgement:"Uploaded"},{new:true})
+
+//       // }
+//     }
+//   }
+// }
+// }
+
+// const ifnoactionrequired=async ()=>{
+//   const correspondence = await Correspondence.find();
+//   for(let i=0;i<correspondence.length;i++){
+//     await Correspondence.findByIdAndUpdate(correspondence[i]._id,{forwarded:"Action Pending"},{new:true})
+//   }  
+// }
+
 
 // Update a correspondence by ID
 const updateCorrespondence = async (req, res) => {
   try {
-    const { date, project, description, subject, acknowledgement, letterno, reffrom, refto, enclosedfrom, enclosedto, forwarded, from, to, type, files, files1 } = req.body;
+    let { date, project, description, subject, acknowledgement, letterno, reffrom, refto, enclosedfrom, enclosedto, forwarded, from, to, type, files, files1, cstatus } = req.body;
     const { fileId, newCurrent } = req.body; // assuming fileId is the unique identifier of the file element
 
     const correspondence = await Correspondence.findById(req.params.id);
+    if (acknowledgement == "Uploaded" && (files1.current == "" || files1.current == undefined)) {
+      // console.log(acknowledgement,correspondence.acknowledgement,files1.current)
+      acknowledgement = correspondence.acknowledgement
+    }
     if (!correspondence) {
       return res.status(404).json({ message: 'Correspondence not found' });
     }
@@ -66,23 +200,25 @@ const updateCorrespondence = async (req, res) => {
     if (type !== undefined) correspondence.type = type;
     if (from !== undefined) correspondence.from = from;
     if (to !== undefined) correspondence.to = to;
+    if (cstatus !== undefined) correspondence.cstatus = cstatus
 
     // If new files are provided, insert them into index 1 and keep the existing order
+    // console.log(files)
     if (files !== undefined) {
-      if (correspondence.files && correspondence.files.length > 0) {
-        correspondence.files = [correspondence.files[0], ...files]; // Keep the first existing file at index 0, add new files to index 1
-      } else {
-        correspondence.files = files; // If no existing files, simply add the new files
-      }
+      // if (correspondence.files && correspondence.files.length > 0) {
+      //   correspondence.files = [correspondence.files[0], ...files]; // Keep the first existing file at index 0, add new files to index 1
+      // } else {
+      correspondence.files = files; // If no existing files, simply add the new files
+      // }
     }
 
     // Similarly, update files1 if necessary
     if (files1 !== undefined) {
-      if (correspondence.files1 && correspondence.files1.length > 0) {
-        correspondence.files1 = [correspondence.files1[0], ...files1]; // Keep the first existing file at index 0, add new files to index 1
-      } else {
-        correspondence.files1 = files1; // If no existing files, simply add the new files
-      }
+      // if (correspondence.files1 && correspondence.files1.length > 0) {
+      //   correspondence.files1 = [correspondence.files1[0], ...files1]; // Keep the first existing file at index 0, add new files to index 1
+      // } else {
+      correspondence.files1 = files1; // If no existing files, simply add the new files
+      // }
     }
 
     // Update the 'current' field inside the specific file
@@ -109,6 +245,8 @@ const updateCorrespondence = async (req, res) => {
 // Delete a correspondence by ID
 const deleteCorrespondence = async (req, res) => {
   try {
+    const {deletedate}=req.query
+    // console.log(deletedate)
     // Fetch the correspondence by its ID
     const correspondence = await Correspondence.findById(req.params.id);
 
@@ -118,7 +256,7 @@ const deleteCorrespondence = async (req, res) => {
     }
 
     // Perform the deletion
-    await Correspondence.findByIdAndDelete(req.params.id);
+    await Correspondence.findByIdAndUpdate(req.params.id, { isDisabled: !correspondence.isDisabled,recoveredDate:deletedate }, { new: true });
 
     // Respond with success message
     res.status(200).json({ message: 'Correspondence deleted successfully' });
@@ -577,5 +715,6 @@ module.exports = {
   AddEnclosedfrom,
   AddReply,
   AddReplyin,
-  AddReplyfrom
+  AddReplyfrom,
+  getLinkedCorrespondences
 };
